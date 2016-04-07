@@ -1,0 +1,115 @@
+<!DOCTTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hello, World!</title>
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <script src="js/jquery-2.2.2.min.js"></script>
+    <script src="js/main.js"></script>
+
+    <!--google material design things -->
+    <link rel="stylesheet" href="css/material.min.css">
+    <script src="js/material.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+  </head>
+  <body>
+
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+      <header class="mdl-layout__header">
+        <div class="mdl-layout__header-row">
+          <!-- Title -->
+          <span class="mdl-layout-title">Title</span>
+          <!-- Add spacer, to align navigation to the right -->
+          <div class="mdl-layout-spacer"></div>
+          <!-- Navigation. -->
+          <nav class="mdl-navigation">
+            <a id="dialog_comm_port_select" class="mdl-navigation__link" href="javascript:void(0)"><i class="material-icons">compare_arrows</i></a>
+            <div class="mdl-tooltip mdl-tooltip--large" for="dialog_comm_port_select">Connect to comm port</div>
+
+            <a id="error_test" class="mdl-navigation__link" href="javascript:void(0)">Error</a>
+            <a class="mdl-navigation__link" href="javascript:void(0)">Link</a>
+            <a class="mdl-navigation__link" href="javascript:void(0)">Link</a>
+          </nav>
+        </div>
+      </header>
+      <main class="mdl-layout__content">
+        <div class="page-content">
+          <div class="notification">
+            <p></p>
+          </div>
+
+          <table class="mdl-data-table mdl-js-data-table">
+            <thead>
+              <tr>
+                <th class="mdl-data-table__cell--non-numeric sortable_table_column" id="id">CAN id</th>
+                <th class="mdl-data-table__cell--non-numeric">Message</th>
+                <th class="mdl-data-table__cell--non-numeric">Change</th>
+                <th class="mdl-data-table__cell--non-numeric sortable_table_column" id="name">Name</th>
+                <th class="mdl-data-table__cell--non-numeric">Message count</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="mdl-data-table__cell--non-numeric">5ES</td>
+                <td class="mdl-data-table__cell--non-numeric">123,456,789,101</td>
+                <td class="mdl-data-table__cell--non-numeric">122,444,777,212</td>
+                <td class="mdl-data-table__cell--non-numeric">Steering column</td>
+                <td class="mdl-data-table__cell--non-numeric">8</td>
+              </tr>
+              <tr>
+                <td class="mdl-data-table__cell--non-numeric">225</td>
+                <td class="mdl-data-table__cell--non-numeric">123,456,789,101</td>
+                <td class="mdl-data-table__cell--non-numeric">122,444,777,212</td>
+                <td class="mdl-data-table__cell--non-numeric">Pedals</td>
+                <td class="mdl-data-table__cell--non-numeric">5</td>
+              </tr>
+              <tr>
+                <td class="mdl-data-table__cell--non-numeric">F3A</td>
+                <td class="mdl-data-table__cell--non-numeric">123,456,789,101</td>
+                <td class="mdl-data-table__cell--non-numeric">122,444,777,212</td>
+                <td class="mdl-data-table__cell--non-numeric">Cluster</td>
+                <td class="mdl-data-table__cell--non-numeric">2</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div id="example"></div>
+
+        </div>
+      </main>
+    </div>
+
+    <!-- Comm port dialog -->
+    <dialog id="comm_port_select" class="mdl-dialog">
+      <div class="mdl-dialog__content">
+        <p>
+          <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="option-1">
+            <input type="radio" id="option-1" class="mdl-radio__button" name="options" value="1" checked>
+            <span class="mdl-radio__label">COM1</span>
+          </label>
+        </p>
+
+        <p>
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <input class="mdl-textfield__input" type="text" pattern="[0-9]*" id="sample4">
+            <label class="mdl-textfield__label" for="sample4">Baud rate</label>
+            <span class="mdl-textfield__error">not a number</span>
+          </div>
+        </p>
+      </div>
+      <div class="mdl-dialog__actions">
+        <button type="button" class="mdl-button" id="comm_port_select_ok">Ok</button>
+        <button type="button" class="mdl-button" id="comm_port_select_close">Cancel</button>
+      </div>
+    </dialog>
+
+    <script type="text/babel">
+      ReactDOM.render(
+        <h1>Hello, world!</h1>,
+        document.getElementById('example')
+      );
+    </script>
+
+  </body>
+</html>

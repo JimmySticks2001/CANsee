@@ -1,0 +1,7 @@
+{
+  "name": "helloworld",
+  "main": "index.html",
+  "dependencies": {
+    "browser-serialport": "2.0.3"
+  }
+}
