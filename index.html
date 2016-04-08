@@ -12,6 +12,8 @@
     <script src="js/material.min.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
+    <!-- handlebars -->
+    <script src="js/handlebars-v4.0.5.js"></script>
   </head>
   <body>
 
@@ -42,43 +44,32 @@
           <table class="mdl-data-table mdl-js-data-table">
             <thead>
               <tr>
-                <th class="mdl-data-table__cell--non-numeric sortable_table_column" id="id">CAN id</th>
+                <th class="mdl-data-table__cell--non-numeric">CAN id</th>
                 <th class="mdl-data-table__cell--non-numeric">Message</th>
                 <th class="mdl-data-table__cell--non-numeric">Change</th>
-                <th class="mdl-data-table__cell--non-numeric sortable_table_column" id="name">Name</th>
+                <th class="mdl-data-table__cell--non-numeric">Name</th>
                 <th class="mdl-data-table__cell--non-numeric">Message count</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td class="mdl-data-table__cell--non-numeric">5ES</td>
-                <td class="mdl-data-table__cell--non-numeric">123,456,789,101</td>
-                <td class="mdl-data-table__cell--non-numeric">122,444,777,212</td>
-                <td class="mdl-data-table__cell--non-numeric">Steering column</td>
-                <td class="mdl-data-table__cell--non-numeric">8</td>
-              </tr>
-              <tr>
-                <td class="mdl-data-table__cell--non-numeric">225</td>
-                <td class="mdl-data-table__cell--non-numeric">123,456,789,101</td>
-                <td class="mdl-data-table__cell--non-numeric">122,444,777,212</td>
-                <td class="mdl-data-table__cell--non-numeric">Pedals</td>
-                <td class="mdl-data-table__cell--non-numeric">5</td>
-              </tr>
-              <tr>
-                <td class="mdl-data-table__cell--non-numeric">F3A</td>
-                <td class="mdl-data-table__cell--non-numeric">123,456,789,101</td>
-                <td class="mdl-data-table__cell--non-numeric">122,444,777,212</td>
-                <td class="mdl-data-table__cell--non-numeric">Cluster</td>
-                <td class="mdl-data-table__cell--non-numeric">2</td>
-              </tr>
+              <script id="message-template" type="x-handlebars-template">​
+                {{#each this}}
+                  <tr data-index="{{id}}">
+                    <td class="mdl-data-table__cell--non-numeric">{{id}}</td>
+                    <td class="mdl-data-table__cell--non-numeric" id="{{id}}_message">{{message}}</td>
+                    <td class="mdl-data-table__cell--non-numeric" id="{{id}}_change"></td>
+                    <td class="mdl-data-table__cell--non-numeric" id="{{id}}_name"></td>
+                    <td class="mdl-data-table__cell--non-numeric" id="{{id}}_message_count"></td>
+                  </tr>
+                {{/each}}
+              </script> 
             </tbody>
           </table>
-
-          <div id="example"></div>
 
         </div>
       </main>
     </div>
+
 
     <!-- Comm port dialog -->
     <dialog id="comm_port_select" class="mdl-dialog">
@@ -89,7 +80,6 @@
             <span class="mdl-radio__label">COM1</span>
           </label>
         </p>
-
         <p>
           <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
             <input class="mdl-textfield__input" type="text" pattern="[0-9]*" id="sample4">
@@ -104,12 +94,21 @@
       </div>
     </dialog>
 
-    <script type="text/babel">
-      ReactDOM.render(
-        <h1>Hello, world!</h1>,
-        document.getElementById('example')
-      );
-    </script>
+
+    <!-- Message dialog -->
+    <dialog id="message_detail_dialog" class="mdl-dialog">
+      <div class="mdl-dialog__title"><span id="modal_can_id"></span></div>
+      <div class="mdl-dialog__content">
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+          <input class="mdl-textfield__input" type="text" id="modal_name">
+          <label class="mdl-textfield__label" for="modal_name">Name</label>
+        </div>
+      </div>
+      <div class="mdl-dialog__actions">
+        <button type="button" class="mdl-button" id="message_select_ok">Ok</button>
+        <button type="button" class="mdl-button" id="message_select_close">Cancel</button>
+      </div>
+    </dialog>
 
   </body>
 </html>
