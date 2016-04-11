@@ -2,12 +2,7 @@
   "name": "helloworld",
   "main": "index.html",
   "dependencies": {
-    "babel-preset-react": "^6.5.0",
     "browser-serialport": "2.0.3",
-    "react": "^0.14.8",
-    "react-dom": "^0.14.8"
-  },
-  "devDependencies": {
-    "webpack": "^1.12.14"
+    "fs": "0.1.7"
   }
 }

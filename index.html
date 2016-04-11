@@ -29,7 +29,9 @@
             <a id="dialog_comm_port_select" class="mdl-navigation__link" href="javascript:void(0)"><i class="material-icons">compare_arrows</i></a>
             <div class="mdl-tooltip mdl-tooltip--large" for="dialog_comm_port_select">Connect to comm port</div>
 
-            <a id="error_test" class="mdl-navigation__link" href="javascript:void(0)">Error</a>
+            <a id="save_as_csv" class="mdl-navigation__link" href="javascript:void(0)"><i class="material-icons">save</i></a>
+            <div class="mdl-tooltip mdl-tooltip--large" for="save_as_csv">Save as CSV</div>
+
             <a class="mdl-navigation__link" href="javascript:void(0)">Link</a>
             <a class="mdl-navigation__link" href="javascript:void(0)">Link</a>
           </nav>
@@ -100,8 +102,9 @@
       <div class="mdl-dialog__title"><span id="modal_can_id"></span></div>
       <div class="mdl-dialog__content">
         <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-          <input class="mdl-textfield__input" type="text" id="modal_name">
+          <input class="mdl-textfield__input" type="text" pattern="[\w ]{0,40}" id="modal_name">
           <label class="mdl-textfield__label" for="modal_name">Name</label>
+          <span class="mdl-textfield__error">40 char max. No special char.</span>
         </div>
       </div>
       <div class="mdl-dialog__actions">
@@ -109,6 +112,9 @@
         <button type="button" class="mdl-button" id="message_select_close">Cancel</button>
       </div>
     </dialog>
+
+    <!-- Save file thingy -->
+    <input style="display:none;" id="saveFileDialog" type="file" nwsaveas="canlog.csv" />
 
   </body>
 </html>

@@ -1,8 +1,12 @@
 $(document).ready(function() {
   "use strict";
 
+  //browser-serialport node module
   var SerialPort = require("browser-serialport").SerialPort;
   var serialPort;
+
+  //filesystem node module
+  var fs = require('fs');
 
   // Get the current window
   var win = nw.Window.get();
@@ -87,23 +91,50 @@ $(document).ready(function() {
 
   //message dialog clicked OK
   message_detail_dialog.querySelector('#message_select_ok').addEventListener('click', function() {
-    //get message from session storage and un-stringify it
-    var message = JSON.parse(sessionStorage.getItem(message_id));
-    //remove the old message from session storage
-    sessionStorage.removeItem(message_id);
-    //update the name to the user entered name
-    message.name = $("#modal_name").val();
-    //put updated message back into session storage
-    sessionStorage.setItem(message.id, JSON.stringify(message));
-    //close the dialog
-    message_detail_dialog.close();
-    //clear the name text field
-    $("#modal_name").val("");
-    //change the items in the row
-    $("#"+message_id+"_name").text(message.name);
+    var entered_name = $("#modal_name").val();
+
+    if(/[^\w ]+/.test(entered_name)){ //if contains special characters...
+      notification('alert', 'Name can not contain special characters');
+    }else if(/.{41,}/.test(entered_name)){
+      notification('alert', 'Name can not exceed 40 characters');
+    }else{
+      //get message from session storage and un-stringify it
+      var message = JSON.parse(sessionStorage.getItem(message_id));
+      //remove the old message from session storage
+      sessionStorage.removeItem(message_id);
+      //update the name to the user entered name
+      message.name = $("#modal_name").val();
+      //put updated message back into session storage
+      sessionStorage.setItem(message.id, JSON.stringify(message));
+      //close the dialog
+      message_detail_dialog.close();
+      //clear the name text field
+      $("#modal_name").val("");
+      //change the items in the row
+      $("#"+message_id+"_name").text(message.name);
+    }
+
+
     //refreshTable();
   });
 
+
+  //
+  //Open save file dialog when save icon is clicked.
+  //
+  $("#save_as_csv").click(function(){
+    var chooser = $('#saveFileDialog');
+    chooser.unbind('change');
+    chooser.change(function(evt) {
+      fs.writeFile($(this).val(), assemble_csv(), function(err) {
+        if(err){
+          notification('alert', 'Unable to save CSV');
+          return console.log(err);
+        }
+      });
+    });
+    chooser.trigger('click');
+  });
 
 
   //
@@ -113,6 +144,7 @@ $(document).ready(function() {
     notification('alert', 'This is an error');
   });
 
+
 });//end doc ready
 
 
@@ -120,7 +152,6 @@ $(document).ready(function() {
 //Notification toast
 //
 var timeoutID;  //Store the timeoutID globally so we can remove the timer before setting a new one.
-
 function notification(type, message){
   //clear the old timeout
   window.clearTimeout(timeoutID);
@@ -174,4 +205,31 @@ function refreshTable() {
   var theTemplate = Handlebars.compile(theTemplateScript);
   //stick data into template and place into index
   $('tbody').append(theTemplate(messages));
-}
+};
+
+
+//
+//create csv formatted string from the content of the table.
+//borred from https://jsfiddle.net/terryyounghk/kpegu/
+//
+function assemble_csv() {
+  // Temporary delimiter characters unlikely to be typed by keyboard
+  // This is to avoid accidentally splitting the actual contents
+  var tmpColDelim = String.fromCharCode(11), // vertical tab character
+      tmpRowDelim = String.fromCharCode(0), // null character
+
+      // actual delimiter characters for CSV format
+      colDelim = '","',
+      rowDelim = '"\r\n"',
+
+  csv = '"' + $('table').find('tr').map(function (i, row) {
+      var $row = $(row),
+          $cols = $row.find('td,th');
+      return $cols.map(function (j, col) {
+          var $col = $(col),
+              text = $col.text();
+          return text.replace(/"/g, '""'); // escape double quotes
+      }).get().join(tmpColDelim);
+  }).get().join(tmpRowDelim).split(tmpRowDelim).join(rowDelim).split(tmpColDelim).join(colDelim) + '"'
+  return csv;
+};
