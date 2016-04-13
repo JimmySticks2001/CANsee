@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>Hello, World!</title>
+    <title>CANSee</title>
     <link rel="stylesheet" type="text/css" href="css/main.css">
     <script src="js/jquery-2.2.2.min.js"></script>
     <script src="js/main.js"></script>
@@ -21,7 +21,7 @@
       <header class="mdl-layout__header">
         <div class="mdl-layout__header-row">
           <!-- Title -->
-          <span class="mdl-layout-title">Title</span>
+          <!-- <span class="mdl-layout-title">CANSee</span> -->
           <!-- Add spacer, to align navigation to the right -->
           <div class="mdl-layout-spacer"></div>
           <!-- Navigation. -->
@@ -29,10 +29,12 @@
             <a id="dialog_comm_port_select" class="mdl-navigation__link" href="javascript:void(0)"><i class="material-icons">compare_arrows</i></a>
             <div class="mdl-tooltip mdl-tooltip--large" for="dialog_comm_port_select">Connect to comm port</div>
 
+            <a id="comm_port_disconnect" class="mdl-navigation__link" href="javascript:void(0)"><i class="material-icons">cancel</i></a>
+            <div class="mdl-tooltip mdl-tooltip--large" for="comm_port_disconnect">Disconnect from comm port</div>
+
             <a id="save_as_csv" class="mdl-navigation__link" href="javascript:void(0)"><i class="material-icons">save</i></a>
             <div class="mdl-tooltip mdl-tooltip--large" for="save_as_csv">Save as CSV</div>
 
-            <a class="mdl-navigation__link" href="javascript:void(0)">Link</a>
             <a class="mdl-navigation__link" href="javascript:void(0)">Link</a>
           </nav>
         </div>
@@ -54,17 +56,6 @@
               </tr>
             </thead>
             <tbody>
-              <script id="message-template" type="x-handlebars-template">​
-                {{#each this}}
-                  <tr data-index="{{id}}">
-                    <td class="mdl-data-table__cell--non-numeric">{{id}}</td>
-                    <td class="mdl-data-table__cell--non-numeric" id="{{id}}_message">{{message}}</td>
-                    <td class="mdl-data-table__cell--non-numeric" id="{{id}}_change"></td>
-                    <td class="mdl-data-table__cell--non-numeric" id="{{id}}_name"></td>
-                    <td class="mdl-data-table__cell--non-numeric" id="{{id}}_message_count"></td>
-                  </tr>
-                {{/each}}
-              </script> 
             </tbody>
           </table>
 
@@ -76,16 +67,18 @@
     <!-- Comm port dialog -->
     <dialog id="comm_port_select" class="mdl-dialog">
       <div class="mdl-dialog__content">
-        <p>
+        <!--
+        <p class="comm_radio">
           <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="option-1">
             <input type="radio" id="option-1" class="mdl-radio__button" name="options" value="1" checked>
             <span class="mdl-radio__label">COM1</span>
           </label>
         </p>
+        -->
         <p>
           <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-            <input class="mdl-textfield__input" type="text" pattern="[0-9]*" id="sample4">
-            <label class="mdl-textfield__label" for="sample4">Baud rate</label>
+            <input class="mdl-textfield__input" type="text" pattern="[0-9]*" id="comm_baud">
+            <label class="mdl-textfield__label" for="comm_baud">Baud rate</label>
             <span class="mdl-textfield__error">not a number</span>
           </div>
         </p>

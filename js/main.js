@@ -2,8 +2,9 @@ $(document).ready(function() {
   "use strict";
 
   //browser-serialport node module
-  var SerialPort = require("browser-serialport").SerialPort;
+  var SerialPort = require("browser-serialport");
   var serialPort;
+  var comm_port_count = 0;
 
   //filesystem node module
   var fs = require('fs');
@@ -14,38 +15,51 @@ $(document).ready(function() {
   win.showDevTools();
 
 
-  $.getJSON("messages.json", function(data) {
-    //get each item from the json data and enter it into session storage if it isn't already there
-    data.forEach(function(datum){
-      if(!sessionStorage.getItem(datum.id)) {
-        sessionStorage.setItem(datum.id,
-                               JSON.stringify({"id": datum.id,
-                                               "message": datum.message,
-                                               "change": "",
-                                               "name": "",
-                                               "count": ""}));
-      }
-    });
-
-    refreshTable();
-	});//end getJSON
-
-
   //
   //Comm port selection
   //
   var comm_port_dialog = document.querySelector('#comm_port_select');
   document.querySelector('#dialog_comm_port_select').addEventListener('click', function() {
     //get the list of available comm ports if any
-    require("browser-serialport").list(function(err, ports) {
+    SerialPort.list(function(err, ports) {
       if(ports.length > 0){
+        if(comm_port_count != ports.length){
+          //put a radio button for each available comm port
+          ports.forEach(function(port, index) {
+            console.log(port.comName);
+            var p = document.createElement("p");
+            //var label = document.createElement("label");
+            //label.className = "mdl-radio mdl-js-radio mdl-js-ripple-effect";
+            //componentHandler.upgradeElement(label);
+            //label.setAttribute("for", "option-2");
+            var input = document.createElement("input");
+            input.setAttribute("type", "radio");
+            input.setAttribute("id", "option-" + index);
+            input.setAttribute("name", "options");
+            input.setAttribute("value", port.comName);
+            //input.after();
+            //input.className("mdl-radio__button");
+            //var span = document.createElement("span");
+            //span.className("mdl-radio__label");
+
+            //$(label).append(input);
+            //$(label).append(span);
+            $(p).append(input);
+            $(input).after(document.createTextNode(port.comName));
+            $('#comm_port_select .mdl-dialog__content').prepend(p);
+
+            //"<p>" +
+            //  "<label class='mdl-radio mdl-js-radio mdl-js-ripple-effect' for='option-1'>" +
+            //    "<input type='radio' id='option-1' class='mdl-radio__button' name='options' value='1' checked>" +
+            //    "<span class='mdl-radio__label'>COM1</span>" +
+            //  "</label>" +
+            //"</p>"
+            comm_port_count = ports.length;
+          });
+        }//end if port count changed
+
         //display the comm port select dialog
         comm_port_dialog.showModal();
-
-        //put a radio button for each available comm port
-        ports.forEach(function(port) {
-          console.log(port.comName);
-        });
       }else{
         notification('alert', 'Unable to find any comm ports');
       }
@@ -57,9 +71,7 @@ $(document).ready(function() {
   });
 
   comm_port_dialog.querySelector('#comm_port_select_ok').addEventListener('click', function() {
-    serialPort = new SerialPort("COM1", {
-      baudrate: 9600
-    });
+    serialConnect($("input[name='options']:checked").val(), $("#comm_baud").val());
     comm_port_dialog.close();
   });
 
@@ -68,16 +80,16 @@ $(document).ready(function() {
   //message detail
   //
   var message_detail_dialog = document.querySelector('#message_detail_dialog');
-  var message_id;
+  var id;
   $('tbody').on('click', 'tr', function() {
-    //get the message id from the data-index attribute
-    message_id = $(this).data('index');
-    //retrieve the message from session storage
-    var message = JSON.parse(sessionStorage.getItem(message_id))
+    //get the message id from the tr id attribute
+    id = this.id;
+    //get the name from the table
+    var name = $("#"+id+"_name").text();
     //update the modal title with the can id
-    $("#modal_can_id").text(message.id);
-    //update the name text field to show the name from session storage
-    $("#modal_name").val(message.name);
+    $("#modal_can_id").text(id);
+    //update the name text field to show the name from the table
+    $("#modal_name").val(name);
     message_detail_dialog.showModal();
   });
 
@@ -98,24 +110,13 @@ $(document).ready(function() {
     }else if(/.{41,}/.test(entered_name)){
       notification('alert', 'Name can not exceed 40 characters');
     }else{
-      //get message from session storage and un-stringify it
-      var message = JSON.parse(sessionStorage.getItem(message_id));
-      //remove the old message from session storage
-      sessionStorage.removeItem(message_id);
-      //update the name to the user entered name
-      message.name = $("#modal_name").val();
-      //put updated message back into session storage
-      sessionStorage.setItem(message.id, JSON.stringify(message));
+      //put updated name in the table
+      changeRow(id, null, null, $("#modal_name").val());   //id, message, change, name
       //close the dialog
       message_detail_dialog.close();
       //clear the name text field
       $("#modal_name").val("");
-      //change the items in the row
-      $("#"+message_id+"_name").text(message.name);
     }
-
-
-    //refreshTable();
   });
 
 
@@ -126,7 +127,7 @@ $(document).ready(function() {
     var chooser = $('#saveFileDialog');
     chooser.unbind('change');
     chooser.change(function(evt) {
-      fs.writeFile($(this).val(), assemble_csv(), function(err) {
+      fs.writeFile($(this).val(), assembleCsv(), function(err) {
         if(err){
           notification('alert', 'Unable to save CSV');
           return console.log(err);
@@ -140,10 +141,56 @@ $(document).ready(function() {
   //
   //Test error Notification
   //
-  $("#error_test").click(function(){
-    notification('alert', 'This is an error');
-  });
+  //$("#error_test").click(function(){
+  //  notification('alert', 'This is an error');
+  //});
 
+
+  //
+  //Manage serial connection here.
+  //
+  function serialConnect(port, baudrate){
+    serialPort = new SerialPort.SerialPort(port, { baudrate: baudrate });
+    var message_buffer = '';
+
+    serialPort.on("open", function(){
+      console.log("connection open");
+
+      serialPort.on("error", function(error){
+        notification('alert', error.message);
+      });
+
+      serialPort.on("data", function(data){
+        //push data into buffer so we can keep it around while playing with it.
+        message_buffer += data.toString();
+
+        if(message_buffer.indexOf('>') != -1){ //we should have a complete message if > is in the buffer.
+          //console.log(message_buffer.toString());
+          var temp_buff = message_buffer.replace('<','').replace('>','').split(',');
+          message_buffer = '';
+
+          console.log();
+          var temp_can_id = temp_buff[0];
+          temp_buff.splice(0,1);
+          var temp_message = temp_buff.join();
+          changeRow(temp_can_id, temp_message);
+        }
+      });
+
+    });
+
+    serialPort.on("error", function(error){
+      notification('alert', error.message);
+    });
+
+    //
+    //Disconnect from comm port when icon clicked
+    //
+    $("#comm_port_disconnect").click(function(){
+      serialPort.close();
+    });
+
+  };//end serialConnect
 
 });//end doc ready
 
@@ -167,52 +214,45 @@ function notification(type, message){
   }
 
   $(".notification").html("<p>" + message + "</p>").slideDown(250);
-}//end notification
+};//end notification
 
 
 //
-//message detail
+//Add or edit a table row. Edits info on an existing row or adds it if it doesn't exist.
 //
-var message_detail_dialog = document.querySelector('#message_detail_dialog');
-function message_dialog(id) {
-  // Grab the template script
-  var messageTemplate = $("#message-detail-template").html();
-  // Compile the template
-  var theTemplate = Handlebars.compile(messageTemplate);
-  // Define our data object
-  var message = JSON.parse(sessionStorage.getItem(id));
-  // Pass our data to the template
-  var theCompiledHtml = theTemplate(message);
-  // Add the compiled html to the page
-  $('#message_dialog_content').html(theCompiledHtml);
-  message_detail_dialog.showModal();
-};
+function changeRow(id, message, change, name) {
+  //set optional params if not entered
+  if(message == null){message = $("#"+id+"_message").text();}
+  if(change == null){change = $("#"+id+"_change").text();}
+  if(name == null){name = $("#"+id+"_name").text();}
 
-
-//
-//refresh the table based off the data in session storage
-//
-function refreshTable() {
-  //get the messages from session storage and put them in the table
-  var messages = [];
-  for(var i = 0; i < sessionStorage.length; i++) {
-    //get from sessionStorage, turm back into json, stick in array
-    messages.push(JSON.parse(sessionStorage.getItem(sessionStorage.key(i))));
+  //see if any rows have the same can id
+  if($("tr[id*="+id+"]").length == 0){  //if it isn't found...
+    //create a new tr with the message info
+    $("tbody").append(
+      "<tr id="+id+">" +
+        "<td class='mdl-data-table__cell--non-numeric' id='"+id+"_id'>"+id+"</td>" +
+        "<td class='mdl-data-table__cell--non-numeric' id='"+id+"_message'>"+message+"</td>" +
+        "<td class='mdl-data-table__cell--non-numeric' id='"+id+"_change'>"+change+"</td>" +
+        "<td class='mdl-data-table__cell--non-numeric' id='"+id+"_name'>"+name+"</td>" +
+        "<td class='mdl-data-table__cell--non-numeric' id='"+id+"_count'>1</td>" +
+      "</tr>"
+    );
+  }else{  //if it is found, update the appropriate column with the new info.
+    if(message != null){$("#"+id+"_message").text(message);}
+    if(change != null){$("#"+id+"_change").text(change);}
+    if(name != null){$("#"+id+"_name").text(name);}
+    //get the old count from the table, increment it, and stick it back into the table.
+    $("#"+id+"_count").text(parseInt($("#"+id+"_count").text()) + 1);
   }
-  //get template from index
-  var theTemplateScript = $("#message-template").html();
-  //Compile the template​
-  var theTemplate = Handlebars.compile(theTemplateScript);
-  //stick data into template and place into index
-  $('tbody').append(theTemplate(messages));
-};
+};//end changeRow
 
 
 //
 //create csv formatted string from the content of the table.
-//borred from https://jsfiddle.net/terryyounghk/kpegu/
+//borrowed from https://jsfiddle.net/terryyounghk/kpegu/
 //
-function assemble_csv() {
+function assembleCsv() {
   // Temporary delimiter characters unlikely to be typed by keyboard
   // This is to avoid accidentally splitting the actual contents
   var tmpColDelim = String.fromCharCode(11), // vertical tab character
@@ -232,4 +272,4 @@ function assemble_csv() {
       }).get().join(tmpColDelim);
   }).get().join(tmpRowDelim).split(tmpRowDelim).join(rowDelim).split(tmpColDelim).join(colDelim) + '"'
   return csv;
-};
+};//end assembleCsv
