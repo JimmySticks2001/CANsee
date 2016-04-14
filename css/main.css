@@ -1,9 +1,13 @@
 .notification {
   height: 49px;
   color: #FFFFFF;
-  position: fixed;
+  /*position: fixed;*/
   width: 100%;
   z-index: 99;
+}
+
+.notification_wrapper {
+  height: 49px;
 }
 
 .notification p {
@@ -33,3 +37,22 @@ table {
 tbody tr {
   height: 0px !important;
 }
+
+.bytes {
+  display: inline-block;
+  text-align: right;
+  width: 30px;
+}
+
+.initially_hidden {
+  display: none;
+}
+
+.mdl-spinner {
+  margin-right: 13px;
+}
+
+.mdl-spinner__layer-1 { border-color: white !important; }
+.mdl-spinner__layer-2 { border-color: white !important; }
+.mdl-spinner__layer-3 { border-color: white !important; }
+.mdl-spinner__layer-4 { border-color: white !important; }

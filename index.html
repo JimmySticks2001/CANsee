@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
     <!-- handlebars -->
-    <script src="js/handlebars-v4.0.5.js"></script>
+    <!-- <script src="js/handlebars-v4.0.5.js"></script> -->
   </head>
   <body>
 
@@ -29,8 +29,10 @@
             <a id="dialog_comm_port_select" class="mdl-navigation__link" href="javascript:void(0)"><i class="material-icons">compare_arrows</i></a>
             <div class="mdl-tooltip mdl-tooltip--large" for="dialog_comm_port_select">Connect to comm port</div>
 
-            <a id="comm_port_disconnect" class="mdl-navigation__link" href="javascript:void(0)"><i class="material-icons">cancel</i></a>
+            <a id="comm_port_disconnect" class="mdl-navigation__link initially_hidden" href="javascript:void(0)"><i class="material-icons">cancel</i></a>
             <div class="mdl-tooltip mdl-tooltip--large" for="comm_port_disconnect">Disconnect from comm port</div>
+
+            <div class="mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active"></div>
 
             <a id="save_as_csv" class="mdl-navigation__link" href="javascript:void(0)"><i class="material-icons">save</i></a>
             <div class="mdl-tooltip mdl-tooltip--large" for="save_as_csv">Save as CSV</div>
@@ -41,16 +43,12 @@
       </header>
       <main class="mdl-layout__content">
         <div class="page-content">
-          <div class="notification">
-            <p></p>
-          </div>
-
           <table class="mdl-data-table mdl-js-data-table">
             <thead>
               <tr>
                 <th class="mdl-data-table__cell--non-numeric">CAN id</th>
                 <th class="mdl-data-table__cell--non-numeric">Message</th>
-                <th class="mdl-data-table__cell--non-numeric">Change</th>
+                <!-- <th class="mdl-data-table__cell--non-numeric">Change</th> -->
                 <th class="mdl-data-table__cell--non-numeric">Name</th>
                 <th class="mdl-data-table__cell--non-numeric">Message count</th>
               </tr>
@@ -58,7 +56,6 @@
             <tbody>
             </tbody>
           </table>
-
         </div>
       </main>
     </div>
@@ -92,6 +89,11 @@
 
     <!-- Message dialog -->
     <dialog id="message_detail_dialog" class="mdl-dialog">
+      <div class="notification_wrapper">
+        <div class="notification">
+          <p></p>
+        </div>
+      </div>
       <div class="mdl-dialog__title"><span id="modal_can_id"></span></div>
       <div class="mdl-dialog__content">
         <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
