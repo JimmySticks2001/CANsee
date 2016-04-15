@@ -8,6 +8,8 @@ Check for errors in the incoming message stream. Don't display errored messages 
 Fix names, you cant erase a name since it is sending in a null value.
 
 
+
+
 Things finished:
 
 When message with same id has been received, increment Message count column.
@@ -32,3 +34,12 @@ When message has changed, highlight changed byte in Change column.
   Perhaps just embolden the changed byte in the message column.
 
 Save the names of the messages in localStorage.
+
+Fix disconnect on app close. win not defined.
+  Removed safe disconnect. serialPort was no longer defined after close event fired. Perhaps browser-serialport does it's own closing on close event.
+
+Make radio buttons for comm port selection look nice.
+
+Fix comm port duplication when new comm port is selectable after app has started.
+
+Add fail to retry after 3 attempts.

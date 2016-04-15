@@ -5,6 +5,7 @@ $(document).ready(function() {
   var SerialPort = require("browser-serialport");
   var serialPort;
   var comm_port_count = 0;
+  var retry_attempts = 0;
 
   //filesystem node module
   var fs = require('fs');
@@ -30,28 +31,35 @@ $(document).ready(function() {
     SerialPort.list(function(err, ports) {
       if(ports.length > 0){
         if(comm_port_count != ports.length){
+          //remove the old comm port radio buttons, the ports will change if something is plugged in or removed.
+          $(".comm_radios").remove();
+
           //put a radio button for each available comm port
           ports.forEach(function(port, index) {
             console.log(port.comName);
             var p = document.createElement("p");
-            //var label = document.createElement("label");
-            //label.className = "mdl-radio mdl-js-radio mdl-js-ripple-effect";
-            //componentHandler.upgradeElement(label);
-            //label.setAttribute("for", "option-2");
+            p.className = "comm_radios";
+            var label = document.createElement("label");
+            label.className = "mdl-radio mdl-js-radio mdl-js-ripple-effect";
+            label.setAttribute("for", "option-" + index);
+
             var input = document.createElement("input");
             input.setAttribute("type", "radio");
             input.setAttribute("id", "option-" + index);
             input.setAttribute("name", "options");
             input.setAttribute("value", port.comName);
-            //input.after();
-            //input.className("mdl-radio__button");
-            //var span = document.createElement("span");
-            //span.className("mdl-radio__label");
+            input.className = "mdl-radio__button";
 
-            //$(label).append(input);
-            //$(label).append(span);
-            $(p).append(input);
-            $(input).after(document.createTextNode(port.comName));
+            var span = document.createElement("span");
+            span.className = "mdl-radio__label";
+            span.appendChild(document.createTextNode(port.comName));
+
+            //componentHandler.upgradeElement(label);
+
+            $(label).append(input);
+            $(label).append(span);
+            $(p).append(label);
+            //$(input).after(document.createTextNode(port.comName));
             $('#comm_port_select .mdl-dialog__content').prepend(p);
 
             //"<p>" +
@@ -60,6 +68,7 @@ $(document).ready(function() {
             //    "<span class='mdl-radio__label'>COM1</span>" +
             //  "</label>" +
             //"</p>"
+            componentHandler.upgradeDom();
             comm_port_count = ports.length;
           });
         }//end if port count changed
@@ -171,10 +180,28 @@ $(document).ready(function() {
 
       //set a timer. If nothing is received after 3 seconds, reconnect.
       serial_retry = setInterval(function(){
-        console.log("retrying connection");
-        serialPort.close();
-        serialPort = null;
-        serialConnect($("input[name='options']:checked").val(), $("#comm_baud").val());
+        //if 3 attempts have been made but no connection, stop trying to connect.
+        if(retry_attempts >= 3){
+          retry_attempts = 0;
+          //cancel the retry attempts.
+          clearInterval(serial_retry);
+          //display an error.
+          notification('alert', 'Unable to connect to comm port');
+          //show the comm dialog with the error in it.
+          comm_port_dialog.showModal();
+          //hide the spinner and show the connect button.
+          $(".mdl-spinner").hide();
+          $("#dialog_comm_port_select").show();
+          //disconnect from the port and destroy the serialPort.
+          serialPort.close();
+          serialPort = null;
+        }else{
+          retry_attempts++;
+          console.log("retrying connection");
+          serialPort.close();
+          serialPort = null;
+          serialConnect($("input[name='options']:checked").val(), $("#comm_baud").val());
+        }
       }, 3000);
 
       serialPort.on("error", function(error){
@@ -221,17 +248,6 @@ $(document).ready(function() {
     });
 
   };//end serialConnect
-
-
-  //
-  //Upon closing the app, disconnect from the serial port.
-  //
-  win.on('close', function() {
-    this.hide(); //hide the window so the user thinks it is closed.
-    serialPort.close();
-    console.log("connection closed");
-    this.close(true); //close for reals.
-  });//end win on close
 
 
 });//end doc ready
