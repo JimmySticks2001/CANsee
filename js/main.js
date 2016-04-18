@@ -217,16 +217,20 @@ $(document).ready(function() {
         //push data into buffer so we can keep it around while playing with it.
         message_buffer += data.toString();
 
-        if(message_buffer.indexOf('>') != -1){ //we should have a complete message if > is in the buffer.
-          //console.log(message_buffer.toString());
-          var temp_buff = message_buffer.replace('<','').replace('>','').split(',');
-          message_buffer = '';
+        console.log(message_buffer);
+        if(message_buffer.indexOf('>') == message_buffer.length -1){
+          //test against the regex pattern to make sure we have a complete messsage.
+          if(/<\d{1,4},\d{1,3},\d{1,3},\d{1,3},\d{1,3},\d{1,3},\d{1,3},\d{1,3},\d{1,3}>/.test(message_buffer)){
+            var temp_buff = message_buffer.replace('<','').replace('>','').split(',');
+            //message_buffer = '';
 
-          //convert string id to string hex id
-          var temp_can_id = decimalStringToHexString(temp_buff[0]);
-          temp_buff.splice(0,1);
-          //var temp_message = temp_buff.join();
-          changeRow(temp_can_id, temp_buff);
+            //convert string id to string hex id
+            var temp_can_id = decimalStringToHexString(temp_buff[0]);
+            temp_buff.splice(0,1);
+            //var temp_message = temp_buff.join();
+            changeRow(temp_can_id, temp_buff);
+          }
+          message_buffer = '';
         }
       });
 
@@ -279,7 +283,7 @@ function notification(type, message){
 //Add or edit a table row. Edits info on an existing row or adds it if it doesn't exist.
 //
 function changeRow(id, message, name) {
-  console.log(name);
+  //console.log(name);
   //see if any rows have the same can id
   if($("tr[id*="+id+"]").length == 0){  //if it isn't found...
     //get the name from localStorage

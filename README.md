@@ -43,3 +43,5 @@ Make radio buttons for comm port selection look nice.
 Fix comm port duplication when new comm port is selectable after app has started.
 
 Add fail to retry after 3 attempts.
+
+Removed handlebars lib.
