@@ -282,7 +282,6 @@ function notification(type, message){
 //Add or edit a table row. Edits info on an existing row or adds it if it doesn't exist.
 //
 function changeRow(id, message, name) {
-  //console.log(name);
   //see if any rows have the same can id
   if($("tr[id*="+id+"]").length == 0){  //if it isn't found...
     //get the name from localStorage
@@ -335,7 +334,7 @@ function changeRow(id, message, name) {
       $("#"+id+"_count").text(parseInt($("#"+id+"_count").text()) + 1);
     }
     //update the name if given.
-    if(name){
+    if(typeof name !== 'undefined'){
       //save the new name in localStorage for future use.
       localStorage.setItem(id, name);
       $("#"+id+"_name").text(name);

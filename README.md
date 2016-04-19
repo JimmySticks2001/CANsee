@@ -1,9 +1,12 @@
-:D
+# CAN see
 
+##### CAN bus sniffer to be used with Seeed Studio CAN-BUS Shield.
+
+http://jeepjkcanbus.blogspot.com/2014/04/martins-can-bus-sniffer-tool-v10.html
 
 Things to do:
 
-Fix names, you cant erase a name since it is sending in a null value.
+Send messages.
 
 
 
@@ -44,3 +47,5 @@ Add fail to retry after 3 attempts.
 Removed handlebars lib.
 
 Check for errors in the incoming message stream. Don't display errored messages on the table.
+
+Fix names, you cant erase a name since it is sending in a null value.
