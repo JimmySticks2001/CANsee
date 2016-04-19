@@ -3,10 +3,7 @@
 
 Things to do:
 
-Check for errors in the incoming message stream. Don't display errored messages on the table.
-
 Fix names, you cant erase a name since it is sending in a null value.
-
 
 
 
@@ -45,3 +42,5 @@ Fix comm port duplication when new comm port is selectable after app has started
 Add fail to retry after 3 attempts.
 
 Removed handlebars lib.
+
+Check for errors in the incoming message stream. Don't display errored messages on the table.

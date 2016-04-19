@@ -217,23 +217,22 @@ $(document).ready(function() {
         //push data into buffer so we can keep it around while playing with it.
         message_buffer += data.toString();
 
-        console.log(message_buffer);
-        if(message_buffer.indexOf('>') == message_buffer.length -1){
-          //test against the regex pattern to make sure we have a complete messsage.
-          if(/<\d{1,4},\d{1,3},\d{1,3},\d{1,3},\d{1,3},\d{1,3},\d{1,3},\d{1,3},\d{1,3}>/.test(message_buffer)){
-            var temp_buff = message_buffer.replace('<','').replace('>','').split(',');
-            //message_buffer = '';
-
-            //convert string id to string hex id
-            var temp_can_id = decimalStringToHexString(temp_buff[0]);
-            temp_buff.splice(0,1);
-            //var temp_message = temp_buff.join();
-            changeRow(temp_can_id, temp_buff);
-          }
+        //test against the regex pattern to make sure we have a complete messsage. If it doesn't match this
+        //format it is not a meesage we are looking for.
+        var match = message_buffer.match(/<\d{1,4},\d{1,3},\d{1,3},\d{1,3},\d{1,3},\d{1,3},\d{1,3},\d{1,3},\d{1,3}>/)[0];
+        if(match){
+          //take off the <> and split on ,
+          var temp_buff = match.toString().replace('<','').replace('>','').split(',');
+          //convert string id to string hex id
+          var temp_can_id = decimalStringToHexString(temp_buff[0]);
+          //remove the CAN id from the message
+          temp_buff.splice(0,1);
+          //update the row this message was for.
+          changeRow(temp_can_id, temp_buff);
+          //clear the message, start over.
           message_buffer = '';
         }
       });
-
     });
 
     serialPort.on("error", function(error){
