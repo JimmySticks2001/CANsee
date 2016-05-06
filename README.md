@@ -2,7 +2,7 @@
 
 ##### CAN bus sniffer to be used with Seeed Studio CAN-BUS Shield.
 
-Inspired by [Martin Viljoen's project](http://jeepjkcanbus.blogspot.com/2014/04/martins-can-bus-sniffer-tool-v10.html), CANsee is an updated tool which is able to display the CAN messages sent across your vehicles internal network. It is built using [NW.js](http://nwjs.io/) (formerly Node Webkit) in the hopes that it will be Mac, Linux, and Windows frienly all from one code-base.
+Inspired by [Martin Viljoen's project](http://jeepjkcanbus.blogspot.com/2014/04/martins-can-bus-sniffer-tool-v10.html), CANsee is an updated tool which is able to display the CAN messages sent across your vehicles internal network. It is built using [NW.js](http://nwjs.io/) (formerly Node Webkit) in the hopes that it will be Mac, Linux, and Windows friendly all from one code-base.
 
 ![alt text](https://raw.githubusercontent.com/JimmySticks2001/CANsee/master/img/1.PNG)
 
